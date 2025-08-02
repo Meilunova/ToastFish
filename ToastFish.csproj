@@ -151,6 +151,9 @@
     <Compile Include="Model\SqliteControl\Select.cs" />
     <Compile Include="Model\StartWithWindows\HotKey.cs" />
     <Compile Include="Model\StartWithWindows\StartWithWindows.cs" />
+    <Compile Include="Model\RandomSchedule\ScheduleConfig.cs" />
+    <Compile Include="Model\RandomSchedule\RandomScheduler.cs" />
+    <Compile Include="Test\RandomScheduleTest.cs" />
     <Compile Include="Resources\IconChika.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -162,12 +165,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\RandomScheduleSettings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="View\ToastFish.xaml.cs">
       <DependentUpon>ToastFish.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\RandomScheduleSettings.xaml.cs">
+      <DependentUpon>RandomScheduleSettings.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -228,6 +239,9 @@
     </PackageReference>
     <PackageReference Include="MvvmLight">
       <Version>5.4.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="NPOI">
       <Version>2.5.5</Version>

@@ -49,6 +49,75 @@ namespace ToastFish.Model.PushControl
         };
         public static MyHotObservable HotKeytObservable = new MyHotObservable();
 
+
+
+        /// <summary>
+        /// 通用的自动发音方法 - 支持英语单词
+        /// </summary>
+        /// <param name="word">要播放发音的英语单词</param>
+        protected virtual void PlayAutoPronunciation(Word word)
+        {
+            if (Select.AUTO_PLAY == 0)
+            {
+                System.Diagnostics.Debug.WriteLine($"自动播放未启用，AUTO_PLAY={Select.AUTO_PLAY}");
+                return;
+            }
+
+            try
+            {
+                string debugMsg = $"开始播放英语单词发音: {word.headWord}";
+                System.Diagnostics.Debug.WriteLine(debugMsg);
+                System.Console.WriteLine($"[DEBUG] {debugMsg}");
+
+                // 准备发音参数
+                string word_save_name = word.headWord;
+                string word_pron = "";
+                switch (Select.ENG_TYPE)
+                {
+                    case 1:
+                        word_pron = word.usPhone;
+                        break;
+                    default:
+                        word_pron = word.ukPhone;
+                        break;
+                }
+
+                List<string> words = new List<string>();
+                words.Add(word_save_name);
+                words.Add(word_pron);
+
+                // 在主线程中执行发音，避免线程问题
+                System.Windows.Application.Current?.Dispatcher.BeginInvoke(new System.Action(() =>
+                {
+                    bool isOK = Download.DownloadMp3.PlayMp3(words);
+                    if (isOK == false)
+                    {
+                        SpeechSynthesizer synth = new SpeechSynthesizer();
+                        synth.SpeakAsync(word.headWord);
+                        System.Diagnostics.Debug.WriteLine($"使用TTS播放英语单词: {word.headWord}");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"使用在线发音播放英语单词: {word.headWord}");
+                    }
+                }));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"英语单词自动发音失败: {ex.Message}");
+                // 备用方案：直接调用TTS
+                try
+                {
+                    SpeechSynthesizer synth = new SpeechSynthesizer();
+                    synth.SpeakAsync(word.headWord);
+                }
+                catch (Exception ttsEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"TTS发音也失败: {ttsEx.Message}");
+                }
+            }
+        }
+
         /// <summary>
         /// 判断字符串是否为数字
         /// </summary>
@@ -428,12 +497,29 @@ namespace ToastFish.Model.PushControl
             words.Add(word_pron);
             if (Select.AUTO_PLAY != 0)
             {
-                bool isOK = Download.DownloadMp3.PlayMp3(words);
-                if (isOK == false)
+                System.Diagnostics.Debug.WriteLine($"英语单词自动发音，AUTO_PLAY={Select.AUTO_PLAY}，单词: {CurrentWord.headWord}");
+
+                // 在主线程中执行发音，避免线程问题
+                System.Windows.Application.Current?.Dispatcher.BeginInvoke(new System.Action(() =>
                 {
-                    SpeechSynthesizer synth = new SpeechSynthesizer();
-                    synth.SpeakAsync(CurrentWord.headWord);
-                }
+                    bool isOK = Download.DownloadMp3.PlayMp3(words);
+                    if (isOK == false)
+                    {
+                        SpeechSynthesizer synth = new SpeechSynthesizer();
+                        synth.Volume = 100; // 设置最大音量，确保与其他地方一致
+                        synth.Rate = 0;     // 设置正常语速
+                        synth.SpeakAsync(CurrentWord.headWord);
+                        System.Diagnostics.Debug.WriteLine($"使用TTS播放英语单词: {CurrentWord.headWord}，音量: {synth.Volume}");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"使用在线发音播放英语单词: {CurrentWord.headWord}");
+                    }
+                }));
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"英语单词自动播放未启用，AUTO_PLAY={Select.AUTO_PLAY}");
             }
             while (isFinished != true)
             {
@@ -659,8 +745,17 @@ namespace ToastFish.Model.PushControl
             }
             if (RandomList.Count > 0)
             {
-                pushWords.PushMessage("背完了！接下来开始测验记忆模糊的单词！");
-                pushWords.PushWaitAllQuestions(RandomList, (List<Word>)Query.AllWordList);
+                // 检查是否启用背诵完成后的测试环节
+                if (Select.ENABLE_TEST_AFTER_STUDY == 1)
+                {
+                    pushWords.PushMessage("背完了！接下来开始测验记忆模糊的单词！");
+                    pushWords.PushWaitAllQuestions(RandomList, (List<Word>)Query.AllWordList);
+                }
+                else
+                {
+                    pushWords.PushMessage("背完了！测试环节已禁用，学习结束。");
+                    System.Diagnostics.Debug.WriteLine("背诵完成后的测试环节已禁用");
+                }
             }
             pushWords.PushMessage("结束了！恭喜！");
 
@@ -681,6 +776,10 @@ namespace ToastFish.Model.PushControl
         {
             Select Query = new Select();
             PushWords pushWords = new PushWords();
+
+            // 确保加载全局配置，特别是AUTO_PLAY设置
+            Query.LoadGlobalConfig();
+            System.Diagnostics.Debug.WriteLine($"英语抽背流程中AUTO_PLAY设置: {Select.AUTO_PLAY}");
 
             WordType WordList = (WordType)Words;
             List<Word> RandomList;
@@ -720,7 +819,55 @@ namespace ToastFish.Model.PushControl
             {
                 if (pushWords.WORD_CURRENT_STATUS != 3)
                     CurrentWord = CopyList[0];// GetRandomWord(CopyList);
+                // 推送单词UI
                 pushWords.PushOneWord(CurrentWord);
+
+                // 智能延迟确保UI完全渲染后再播放音频
+                if (Select.AUTO_PLAY != 0)
+                {
+                    string debugMsg = $"多个英语单词抽背中自动播放发音，单词: {CurrentWord.headWord}";
+                    System.Diagnostics.Debug.WriteLine(debugMsg);
+
+                    // 智能延迟：基础延迟 + 根据内容长度调整
+                    int baseDelay = 500; // 基础延迟500ms
+                    int contentLength = CurrentWord.headWord.Length + CurrentWord.tranCN.Length;
+                    int smartDelay = baseDelay + Math.Min(contentLength * 10, 300); // 最多额外300ms
+
+                    System.Diagnostics.Debug.WriteLine($"计算的智能延迟: {smartDelay}ms");
+                    System.Threading.Thread.Sleep(smartDelay);
+
+                    // 播放音频，确保音量一致
+                    string word_pron, word_save_name;
+                    switch (Select.ENG_TYPE)
+                    {
+                        case 1:
+                            word_save_name = CurrentWord.headWord + "_us";
+                            word_pron = CurrentWord.headWord + "&type=1";
+                            break;
+                        default:
+                            word_save_name = CurrentWord.headWord + "_uk";
+                            word_pron = CurrentWord.headWord + "&type=2";
+                            break;
+                    }
+
+                    List<string> audioWords = new List<string>();
+                    audioWords.Add(word_save_name);
+                    audioWords.Add(word_pron);
+
+                    bool isOK = Download.DownloadMp3.PlayMp3(audioWords);
+                    if (isOK == false)
+                    {
+                        SpeechSynthesizer synth = new SpeechSynthesizer();
+                        synth.Volume = 100; // 设置最大音量，确保与其他地方一致
+                        synth.Rate = 0;     // 设置正常语速
+                        synth.SpeakAsync(CurrentWord.headWord);
+                        System.Diagnostics.Debug.WriteLine($"使用TTS播放英语单词: {CurrentWord.headWord}，音量: {synth.Volume}");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine($"使用在线发音播放英语单词: {CurrentWord.headWord}");
+                    }
+                }
 
                 pushWords.WORD_CURRENT_STATUS = 2;
                 while (pushWords.WORD_CURRENT_STATUS == 2)
@@ -797,14 +944,24 @@ namespace ToastFish.Model.PushControl
 
                 }
             }
-            Debug.WriteLine($"背完了！接下来开始测验！@{DateTime.Now}");
-            pushWords.PushMessage("背完了！接下来开始测验！");
-            Thread.Sleep(3000);
+            // 检查是否启用抽背完成后的测试环节
+            if (Select.ENABLE_TEST_AFTER_RECITATION == 1)
+            {
+                Debug.WriteLine($"背完了！接下来开始测验！@{DateTime.Now}");
+                pushWords.PushMessage("背完了！接下来开始测验！");
+                Thread.Sleep(3000);
 
-            /* 背诵结束 */
-            Debug.WriteLine($"开始做题 @{DateTime.Now}");
-            Query.SelectWordList();
-            pushWords.PushWaitAllQuestions(RandomList, (List<Word>)Query.AllWordList);
+                /* 背诵结束 */
+                Debug.WriteLine($"开始做题 @{DateTime.Now}");
+                Query.SelectWordList();
+                pushWords.PushWaitAllQuestions(RandomList, (List<Word>)Query.AllWordList);
+            }
+            else
+            {
+                Debug.WriteLine($"抽背完成，测试环节已禁用 @{DateTime.Now}");
+                pushWords.PushMessage("抽背完成！测试环节已禁用，学习结束。");
+                Thread.Sleep(2000);
+            }
 
             Debug.WriteLine($"结束了！恭喜！ @{DateTime.Now}");
 

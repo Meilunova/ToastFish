@@ -1,0 +1,11 @@
+{
+  "IsEnabled": true,
+  "StartTime": "09:00:00",
+  "EndTime": "17:00:00",
+  "MinIntervalMinutes": 10,
+  "MaxIntervalMinutes": 60,
+  "IsDoNotDisturbEnabled": false,
+  "DoNotDisturbStart": "12:00:00",
+  "DoNotDisturbEnd": "13:00:00",
+  "WordCount": 1
+}

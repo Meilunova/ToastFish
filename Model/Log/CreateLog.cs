@@ -45,7 +45,7 @@ namespace ToastFish.Model.Log
                 {
                     JpWord TempWord = JpWordList[i];
                     row = sheet.CreateRow(i + 1);
-                    List<String> WordProperty = new List<String> { TempWord.headWord, TempWord.tranCN, TempWord.Phone.ToString(), TempWord.hiragana, TempWord.pos};
+                    List<String> WordProperty = new List<String> { TempWord.headWord, TempWord.tranCN, TempWord.phone.ToString(), TempWord.hiragana, TempWord.pos};
                     for (int j = 0; j < WordProperty.Count; j++)
                     {
                         ICell cell = row.CreateCell(j + 1);
@@ -165,7 +165,7 @@ namespace ToastFish.Model.Log
                         continue;
                     TempWord.headWord = Row.GetCell(1).ToString();
                     TempWord.tranCN = Row.GetCell(2).ToString();
-                    TempWord.Phone = int.Parse(Row.GetCell(3).ToString());
+                    TempWord.phone = int.Parse(Row.GetCell(3).ToString());
                     TempWord.hiragana = Row.GetCell(4).ToString();
                     TempWord.pos = Row.GetCell(5).ToString();
                     JpWordList.Add(TempWord);

@@ -1,0 +1,40 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "msbuild",
+            "type": "process",
+            "args": [
+                "ToastFish.sln",
+                "/p:Configuration=Debug",
+                "/p:Platform=x64${cwd}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "clean",
+            "command": "msbuild",
+            "type": "process",
+            "args": [
+                "ToastFish.sln",
+                "/t:Clean",
+                "/p:Configuration=Debug",
+                "/p:Platform=x64${cwd}"
+            ],
+            "group": "build"
+        }
+    ]
+}

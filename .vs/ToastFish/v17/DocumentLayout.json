@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\\u9999\u8349\u5DE5\u5177\u7BB1\\\u5355\u8BCD\u523A\u5BA2\\ToastFish\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{E674C965-350B-4A72-9929-908BFB20F678}|ToastFish.csproj|e:\\\u9999\u8349\u5DE5\u5177\u7BB1\\\u5355\u8BCD\u523A\u5BA2\\toastfish\\model\\pushcontrol\\pushjpwords.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E674C965-350B-4A72-9929-908BFB20F678}|ToastFish.csproj|solutionrelative:model\\pushcontrol\\pushjpwords.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "PushJpWords.cs",
+              "DocumentMoniker": "E:\\\u9999\u8349\u5DE5\u5177\u7BB1\\\u5355\u8BCD\u523A\u5BA2\\ToastFish\\Model\\PushControl\\PushJpWords.cs",
+              "RelativeDocumentMoniker": "Model\\PushControl\\PushJpWords.cs",
+              "ToolTip": "E:\\\u9999\u8349\u5DE5\u5177\u7BB1\\\u5355\u8BCD\u523A\u5BA2\\ToastFish\\Model\\PushControl\\PushJpWords.cs",
+              "RelativeToolTip": "Model\\PushControl\\PushJpWords.cs",
+              "ViewState": "AgIAALwAAAAAAAAAAADwv8MAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-02T11:16:52.619Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

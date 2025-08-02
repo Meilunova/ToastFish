@@ -1,5 +1,45 @@
-obj/
+﻿# Visual Studio
 bin/
-token.txt
-.vs/
-.github/
+obj/
+*.user
+*.suo
+*.cache
+*.log
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# NuGet Packages
+*.nupkg
+packages/
+!packages/repositories.config
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+.BIN/
+
+# Log files
+*.log
+Log/
+
+# Temporary files
+*.tmp
+*.temp
+
+# SQLite database files
+*.db-journal
+*.db-wal
+*.db-shm
